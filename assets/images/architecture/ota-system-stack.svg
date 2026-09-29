@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="690" viewBox="0 0 1000 690" role="img" aria-labelledby="title desc">
+  <title id="title">Embedded OTA update system stack</title>
+  <desc id="desc">Firmware source and Aliyun IoT feed UART YMODEM or MQTT block transport, followed by update control, validation, Flash update, Bootloader, and the application.</desc>
+  <rect width="1000" height="690" rx="24" fill="#f6f8fa"/>
+  <style>
+    .box{fill:#fff;stroke:#57606a;stroke-width:2}.accent{fill:#ddf4ff;stroke:#0969da;stroke-width:2}.boundary{fill:#fff8c5;stroke:#9a6700;stroke-width:2}
+    .title{font:700 24px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.text{font:600 18px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.sub{font:14px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#57606a}.arrow{stroke:#57606a;stroke-width:3;fill:none;marker-end:url(#arrow)}
+  </style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#57606a"/></marker></defs>
+  <text x="500" y="45" text-anchor="middle" class="title">Embedded OTA Update Stack</text>
+  <rect x="220" y="70" width="560" height="72" rx="12" class="box"/>
+  <text x="500" y="101" text-anchor="middle" class="text">Firmware Source / Aliyun IoT</text>
+  <text x="500" y="125" text-anchor="middle" class="sub">local raw BIN or OTA metadata and blocks</text>
+  <path d="M500 142V170" class="arrow"/>
+  <rect x="220" y="172" width="560" height="78" rx="12" class="accent"/>
+  <text x="500" y="204" text-anchor="middle" class="text">Firmware Transport</text>
+  <text x="500" y="230" text-anchor="middle" class="sub">UART / YMODEM · ESP8266 AT · MQTT block request</text>
+  <path d="M500 250V278" class="arrow"/>
+  <rect x="220" y="280" width="560" height="78" rx="12" class="box"/>
+  <text x="500" y="312" text-anchor="middle" class="text">Update Control &amp; Packet Integrity</text>
+  <text x="500" y="338" text-anchor="middle" class="sub">version state · update flag · packet/block CRC</text>
+  <path d="M500 358V386" class="arrow"/>
+  <rect x="220" y="388" width="560" height="78" rx="12" class="box"/>
+  <text x="500" y="420" text-anchor="middle" class="text">Internal Flash Update</text>
+  <text x="500" y="446" text-anchor="middle" class="sub">direct IAP write or Staging Backup → Active App copy</text>
+  <path d="M500 466V494" class="arrow"/>
+  <rect x="220" y="496" width="560" height="72" rx="12" class="accent"/>
+  <text x="500" y="527" text-anchor="middle" class="text">Bootloader</text>
+  <text x="500" y="551" text-anchor="middle" class="sub">update decision · fixed-address application handoff</text>
+  <path d="M500 568V596" class="arrow"/>
+  <rect x="220" y="598" width="560" height="64" rx="12" class="box"/>
+  <text x="500" y="638" text-anchor="middle" class="text">GD32F407VE Application</text>
+  <rect x="800" y="388" width="160" height="174" rx="12" class="boundary"/>
+  <text x="880" y="421" text-anchor="middle" class="text">Boundary</text>
+  <text x="880" y="452" text-anchor="middle" class="sub">no signature</text>
+  <text x="880" y="477" text-anchor="middle" class="sub">no encryption</text>
+  <text x="880" y="502" text-anchor="middle" class="sub">no A/B boot</text>
+  <text x="880" y="527" text-anchor="middle" class="sub">no rollback</text>
+</svg>
