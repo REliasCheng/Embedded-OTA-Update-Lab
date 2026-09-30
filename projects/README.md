@@ -1,6 +1,6 @@
 # 工程索引 | Project Index
 
-主线按固件更新机制递进组织。Bootloader 与 Application 在同一系统目录中配对，不拆成独立项目计数。
+主线按固件更新机制递进组织。仓库包含 5 个技术系统、3 组 Bootloader/Application pair 和 8 个 Keil 工程定义；配对工程不拆成独立项目计数。
 
 1. [Flash Programming Foundation](01-flash-basics/)
 2. [Bootloader / Application Split](02-boot-app-split/)

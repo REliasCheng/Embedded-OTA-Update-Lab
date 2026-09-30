@@ -22,4 +22,8 @@
 - [Keil project](course/Project/GD32F407.uvprojx)
 - [Flash layout](../../docs/flash-layout.md)
 
+## 当前边界
+
+本目录提供 Flash 操作基础，不包含 Bootloader/Application pair，也没有本轮自动构建或板端擦写记录。
+
 [返回工程索引](../README.md) · [下一项：Bootloader / Application Split](../02-boot-app-split/)

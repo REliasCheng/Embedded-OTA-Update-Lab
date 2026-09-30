@@ -13,6 +13,8 @@ application/course/  application linked at 0x08004000, VTOR offset 0x4000
 
 Bootloader 从 Application 起点读取初始 MSP 和 Reset Handler；Application 在早期初始化中设置向量表偏移。两个工程必须配套查看。
 
+该 pair 只建立固定地址分离与启动交接，不包含 YMODEM 或网络固件传输。
+
 ## 关键接口
 
 - Bootloader `User/main.c`：`BootToApp()`
@@ -24,5 +26,6 @@ Bootloader 从 Application 起点读取初始 MSP 和 Reset Handler；Applicatio
 - [Bootloader source snapshot](bootloader/course/)
 - [Application source snapshot](application/course/)
 - [Application jump](../../docs/application-jump.md)
+- [Bootloader architecture](../../docs/bootloader-architecture.md)
 
 [上一项：Flash Basics](../01-flash-basics/) · [返回工程索引](../README.md) · [下一项：YMODEM IAP](../03-ymodem-iap/)

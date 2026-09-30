@@ -1,6 +1,6 @@
 # Image Integrity
 
-当前工程包含三类 CRC，用于不同层级的数据错误检测。它们没有构成 firmware authentication。
+当前工程包含三类 CRC，用于不同层级的数据错误检测。它们不验证 firmware 来源，也没有构成 firmware authentication。
 
 | Mechanism | Scope | Polynomial / form | Engineering role |
 |---|---|---|---|
@@ -8,7 +8,7 @@
 | CRC-16/IBM | OTA firmware block | `0xA001` | MQTT block payload error detection |
 | CRC8 | Parameter record | implementation-defined in project | Flash parameter record consistency |
 
-## 未形成的映像级机制
+## Cryptographic Boundary
 
 - Whole-image hash；
 - Digital signature / public-key verification；

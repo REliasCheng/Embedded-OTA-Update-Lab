@@ -13,7 +13,12 @@ Bootloader 与 Application 的交接依赖 Cortex-M vector table 的前两个 wo
 5. 从 `ApplicationStart + 4` 读取 Reset Handler；
 6. 以函数指针进入 Application reset path。
 
-基础系统使用 `0x08004000`，最终 OTA 系统使用 `0x08008000`。不能用同一个固定值描述全部配对工程。
+不同工程族使用不同固定地址：
+
+- Boot/App split 与 YMODEM IAP pair：Application `0x08004000`，vector offset `0x4000`；
+- MQTT OTA pair：Application `0x08008000`，vector offset `0x8000`。
+
+地址来自各自的 link configuration 与启动代码，不能用同一个 `APPLICATION_START` 描述全部配对工程。
 
 ## Application 侧
 
@@ -24,7 +29,7 @@ Application 的早期初始化调用 `nvic_vector_table_set(NVIC_VECTTAB_FLASH, 
 
 向量表重定位由 Application 完成，不是 Bootloader 跳转函数直接写 `VTOR`。
 
-## 当前边界
+## Handoff 边界
 
 现有跳转代码没有完整验证 Reset Handler 地址范围与 Thumb state，也没有统一清理全部 NVIC enable/pending 状态和所有外设。这里描述的是当前 handoff sequence，不代表已经完成通用、安全的启动交接验证。
 

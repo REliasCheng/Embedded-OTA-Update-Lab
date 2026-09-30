@@ -2,7 +2,7 @@
 
 Bootloader 位于 `0x08000000`，负责更新条件判断、固件接收或复制，以及向固定 Application 地址交接执行权。它不承担常规应用逻辑。
 
-## 两类启动路径
+## 启动与更新路径
 
 ```text
 Reset
@@ -14,7 +14,9 @@ Update condition?
   └─ Yes → receive/copy firmware → update metadata → Application handoff
 ```
 
-基础与 IAP 系统把 Application 放在 `0x08004000`；最终 OTA 系统将 Bootloader 扩展到 32 KiB，Application 改为 `0x08008000`。地址必须与配对 Application 的 Keil link configuration 和 `VTOR` offset 一致。
+基础与 YMODEM IAP 系统把 Application 放在 `0x08004000`；最终 MQTT OTA 系统将 Bootloader 扩展到 32 KiB，Application 改为 `0x08008000`。地址必须与配对 Application 的 Keil link configuration 和 `VTOR` offset 一致。
+
+YMODEM IAP 与 MQTT OTA 使用不同 transport：前者从 UART packet 直接写入 Application 区，后者在 Bootloader 中请求网络固件块并写入 Staging Backup。二者共享 Flash programming 与 application handoff 基础，但不是同一数据路径。
 
 ## 最终 OTA 分工
 
@@ -27,7 +29,7 @@ Update condition?
 
 ## 当前验证边界
 
-跳转路径检查初始 MSP 是否位于 SRAM1 范围，但没有形成完整 image header、整包 hash、数字签名或 boot confirmation。Bootloader 也没有在两个可启动 Slot 之间选择。
+跳转路径检查初始 MSP 是否位于 SRAM1 范围，但没有形成完整 image header、whole-image hash、数字签名或 boot confirmation。Bootloader 也没有在两个可启动 Slot 之间选择。
 
 ## 工程入口
 

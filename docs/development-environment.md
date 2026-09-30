@@ -10,7 +10,7 @@
 
 ## Project organization
 
-公开仓库包含 5 条主线系统和 8 个 Keil `.uvprojx`：Flash foundation 1 个、Boot/App split 2 个、YMODEM IAP 2 个、OTA control 1 个、最终 MQTT OTA pair 2 个。
+公开仓库包含 5 条主线系统和 8 个 Keil `.uvprojx`。Boot/App split、YMODEM IAP 和最终 MQTT OTA 各由 Bootloader/Application 两个工程组成；因此 8 个工程定义不等于 8 个独立技术系统。
 
 项目文件保留原始相对目录结构；`Objects`、`Listings`、固件二进制、历史日志和 IDE 用户状态未迁移。
 

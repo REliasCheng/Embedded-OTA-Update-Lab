@@ -15,7 +15,7 @@ Bootloader 预留 16 KiB；配对 Application 使用 `0x4000` 的 vector-table o
 
 ![OTA flash memory map](../assets/images/diagram/flash-memory-map.svg)
 
-地址与大小由最终 Bootloader 的 `Common/store_app.h` 推导：
+地址与大小由最终 Bootloader 的 [`Common/store_app.h`](../projects/05-mqtt-ota-system/bootloader/course/Common/store_app.h) 推导：
 
 | Region | Address range | Size | Role |
 |---|---|---:|---|
@@ -25,7 +25,7 @@ Bootloader 预留 16 KiB；配对 Application 使用 `0x4000` 的 vector-table o
 | Update Info | `0x0807E800`–`0x0807EFFF` | 2 KiB | 更新标志 |
 | Parameters | `0x0807F000`–`0x0807FFFF` | 4 KiB | 版本与参数记录 |
 
-`Staging Backup` 与 Active App 大小相同，但 Bootloader 不从 staging 地址启动，也没有 active/pending/confirmed Slot 状态。因此该布局不是 A/B firmware partition。
+`Staging Backup` 与 Active App 大小相同，但 Bootloader 不从 staging 地址启动，也没有 active/pending/confirmed Slot 状态。因此它是 image storage 与 copy source，不是 A/B firmware partition。
 
 ## Link configuration 边界
 

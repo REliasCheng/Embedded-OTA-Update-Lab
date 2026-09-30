@@ -1,24 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="420" viewBox="0 0 1100 420" role="img" aria-labelledby="title desc">
-  <title id="title">GD32F407 OTA internal Flash memory map</title>
-  <desc id="desc">A 512 KiB Flash layout containing a 32 KiB Bootloader, 237 KiB Active App, 237 KiB non-bootable Staging Backup, 2 KiB Update Info, and 4 KiB Parameters.</desc>
-  <rect width="1100" height="420" rx="24" fill="#f6f8fa"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" role="img" aria-labelledby="title desc">
+  <title id="title">GD32F407 Application Offsets and OTA Flash Memory Map</title>
+  <desc id="desc">Basic and YMODEM IAP systems start the application at 0x08004000. The final OTA system uses a 32 KiB Bootloader, Active App at 0x08008000, non-bootable Staging Backup, Update Info, and Parameters.</desc>
+  <rect width="1100" height="520" rx="24" fill="#f6f8fa"/>
   <style>
-    .title{font:700 24px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.name{font:700 16px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.meta{font:14px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#57606a}.warn{font:700 15px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#9a6700}
+    .title{font:700 24px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.section{font:700 18px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.name{font:700 15px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.meta{font:13px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#57606a}.tiny{font:11px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#57606a}.warn{font:700 15px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#9a6700}
   </style>
-  <text x="550" y="48" text-anchor="middle" class="title">GD32F407VE OTA Flash Map — 512 KiB</text>
-  <g transform="translate(55,105)">
-    <rect x="0" y="0" width="120" height="140" rx="10" fill="#ddf4ff" stroke="#0969da" stroke-width="2"/>
-    <text x="60" y="49" text-anchor="middle" class="name">Bootloader</text><text x="60" y="76" text-anchor="middle" class="meta">32 KiB</text><text x="60" y="105" text-anchor="middle" class="meta">08000000</text><text x="60" y="125" text-anchor="middle" class="meta">08007FFF</text>
-    <rect x="120" y="0" width="350" height="140" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
-    <text x="295" y="49" text-anchor="middle" class="name">Active App</text><text x="295" y="76" text-anchor="middle" class="meta">237 KiB · fixed boot target</text><text x="295" y="105" text-anchor="middle" class="meta">08008000</text><text x="295" y="125" text-anchor="middle" class="meta">080433FF</text>
-    <rect x="470" y="0" width="350" height="140" fill="#fff8c5" stroke="#9a6700" stroke-width="2"/>
-    <text x="645" y="49" text-anchor="middle" class="name">Staging Backup</text><text x="645" y="76" text-anchor="middle" class="meta">237 KiB · copy source</text><text x="645" y="105" text-anchor="middle" class="meta">08043400</text><text x="645" y="125" text-anchor="middle" class="meta">0807E7FF</text>
-    <rect x="820" y="0" width="75" height="140" fill="#fbefff" stroke="#8250df" stroke-width="2"/>
-    <text x="857" y="46" text-anchor="middle" class="name">Update</text><text x="857" y="69" text-anchor="middle" class="meta">Info</text><text x="857" y="92" text-anchor="middle" class="meta">2 KiB</text><text x="857" y="117" text-anchor="middle" class="meta">7E800</text>
-    <rect x="895" y="0" width="95" height="140" rx="10" fill="#ffebe9" stroke="#cf222e" stroke-width="2"/>
-    <text x="942" y="46" text-anchor="middle" class="name">Parameters</text><text x="942" y="73" text-anchor="middle" class="meta">4 KiB</text><text x="942" y="101" text-anchor="middle" class="meta">0807F000</text><text x="942" y="123" text-anchor="middle" class="meta">0807FFFF</text>
+  <text x="550" y="42" text-anchor="middle" class="title">GD32F407VE Application Offsets and OTA Flash Map</text>
+
+  <text x="55" y="82" class="section">Basic / YMODEM IAP pair</text>
+  <g transform="translate(55,98)">
+    <rect x="0" y="0" width="180" height="74" rx="10" fill="#ddf4ff" stroke="#0969da" stroke-width="2"/>
+    <text x="90" y="29" text-anchor="middle" class="name">Bootloader</text><text x="90" y="53" text-anchor="middle" class="meta">0x08000000–0x08003FFF</text>
+    <rect x="180" y="0" width="810" height="74" rx="10" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
+    <text x="585" y="29" text-anchor="middle" class="name">Application</text><text x="585" y="53" text-anchor="middle" class="meta">starts at 0x08004000 · VTOR offset 0x4000</text>
   </g>
-  <text x="700" y="302" text-anchor="middle" class="warn">Staging Backup is not a bootable Slot B</text>
-  <text x="550" y="342" text-anchor="middle" class="meta">Bootloader always hands off to the fixed Active App address at 0x08008000.</text>
-  <text x="550" y="372" text-anchor="middle" class="meta">Address ranges are derived from the final Bootloader store_app.h definitions.</text>
+
+  <text x="55" y="215" class="section">Final MQTT OTA system</text>
+  <g transform="translate(55,232)">
+    <rect x="0" y="0" width="120" height="140" rx="10" fill="#ddf4ff" stroke="#0969da" stroke-width="2"/>
+    <text x="60" y="43" text-anchor="middle" class="name">Bootloader</text><text x="60" y="68" text-anchor="middle" class="meta">32 KiB</text><text x="60" y="98" text-anchor="middle" class="meta">0x08000000</text><text x="60" y="120" text-anchor="middle" class="meta">0x08007FFF</text>
+
+    <rect x="120" y="0" width="350" height="140" fill="#dafbe1" stroke="#1a7f37" stroke-width="2"/>
+    <text x="295" y="43" text-anchor="middle" class="name">Active App</text><text x="295" y="68" text-anchor="middle" class="meta">237 KiB · fixed boot target</text><text x="295" y="98" text-anchor="middle" class="meta">0x08008000</text><text x="295" y="120" text-anchor="middle" class="meta">0x080433FF</text>
+
+    <rect x="470" y="0" width="350" height="140" fill="#fff8c5" stroke="#9a6700" stroke-width="2"/>
+    <text x="645" y="43" text-anchor="middle" class="name">Staging Backup</text><text x="645" y="68" text-anchor="middle" class="meta">237 KiB · image storage</text><text x="645" y="98" text-anchor="middle" class="meta">0x08043400</text><text x="645" y="120" text-anchor="middle" class="meta">0x0807E7FF</text>
+
+    <rect x="820" y="0" width="85" height="140" fill="#fbefff" stroke="#8250df" stroke-width="2"/>
+    <text x="862" y="32" text-anchor="middle" class="name">Update</text><text x="862" y="53" text-anchor="middle" class="name">Info</text><text x="862" y="77" text-anchor="middle" class="meta">2 KiB</text><text x="862" y="103" text-anchor="middle" class="tiny">0x0807E800</text><text x="862" y="123" text-anchor="middle" class="tiny">0x0807EFFF</text>
+
+    <rect x="905" y="0" width="85" height="140" rx="10" fill="#ffebe9" stroke="#cf222e" stroke-width="2"/>
+    <text x="947" y="32" text-anchor="middle" class="name">Parameters</text><text x="947" y="59" text-anchor="middle" class="meta">4 KiB</text><text x="947" y="91" text-anchor="middle" class="tiny">0x0807F000</text><text x="947" y="113" text-anchor="middle" class="tiny">0x0807FFFF</text>
+  </g>
+
+  <text x="700" y="420" text-anchor="middle" class="warn">Staging Backup is image storage, not a bootable Slot B</text>
+  <text x="550" y="453" text-anchor="middle" class="meta">The final Bootloader always hands off to the fixed Active App address at 0x08008000.</text>
+  <text x="550" y="482" text-anchor="middle" class="meta">Final OTA ranges are derived from the selected store_app.h definitions.</text>
 </svg>

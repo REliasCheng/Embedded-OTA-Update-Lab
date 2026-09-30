@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" viewBox="0 0 1100 560" role="img" aria-labelledby="title desc">
   <title id="title">Firmware update flow</title>
-  <desc id="desc">Application metadata and update trigger lead to reset, MQTT block download, block CRC, staging Flash, copy to Active App, and a fixed-address boot decision.</desc>
+  <desc id="desc">Application metadata and update intent lead to reset, MQTT block requests, block CRC, staging Flash, image copy and state update, and a fixed-address application handoff.</desc>
   <rect width="1100" height="560" rx="24" fill="#f6f8fa"/>
   <style>
-    .box{fill:#fff;stroke:#57606a;stroke-width:2}.app{fill:#ddf4ff;stroke:#0969da;stroke-width:2}.boot{fill:#dafbe1;stroke:#1a7f37;stroke-width:2}.boundary{fill:#fff8c5;stroke:#9a6700;stroke-width:2}.title{font:700 24px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.text{font:700 16px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.sub{font:13px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#57606a}.arrow{stroke:#57606a;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    .box{fill:#fff;stroke:#57606a;stroke-width:2}.app{fill:#ddf4ff;stroke:#0969da;stroke-width:2}.boot{fill:#dafbe1;stroke:#1a7f37;stroke-width:2}.boundary{fill:#fff8c5;stroke:#9a6700;stroke-width:2}.title{font:700 24px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.text{font:700 16px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.small{font:700 14px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#24292f}.sub{font:13px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#57606a}.arrow{stroke:#57606a;stroke-width:3;fill:none;marker-end:url(#arrow)}
   </style>
   <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#57606a"/></marker></defs>
   <text x="550" y="45" text-anchor="middle" class="title">MQTT OTA Firmware Update Flow</text>
@@ -19,9 +19,9 @@
   <path d="M721 277H653" class="arrow"/>
   <rect x="481" y="237" width="170" height="80" rx="10" class="boundary"/><text x="566" y="267" text-anchor="middle" class="text">Staging Flash</text><text x="566" y="292" text-anchor="middle" class="sub">non-bootable backup</text>
   <path d="M481 277H413" class="arrow"/>
-  <rect x="241" y="237" width="170" height="80" rx="10" class="boot"/><text x="326" y="267" text-anchor="middle" class="text">Copy Image</text><text x="326" y="292" text-anchor="middle" class="sub">staging → active</text>
+  <rect x="241" y="237" width="170" height="80" rx="10" class="boot"/><text x="326" y="267" text-anchor="middle" class="small">Copy / State Update</text><text x="326" y="292" text-anchor="middle" class="sub">staging → active</text>
   <path d="M326 317V377" class="arrow"/>
-  <rect x="241" y="379" width="170" height="80" rx="10" class="boot"/><text x="326" y="409" text-anchor="middle" class="text">Boot Decision</text><text x="326" y="434" text-anchor="middle" class="sub">fixed App address</text>
+  <rect x="241" y="379" width="170" height="80" rx="10" class="boot"/><text x="326" y="409" text-anchor="middle" class="small">Application Handoff</text><text x="326" y="434" text-anchor="middle" class="sub">fixed App address</text>
   <path d="M411 419H479" class="arrow"/>
   <rect x="481" y="379" width="170" height="80" rx="10" class="app"/><text x="566" y="409" text-anchor="middle" class="text">Application</text><text x="566" y="434" text-anchor="middle" class="sub">0x08008000</text>
   <rect x="721" y="379" width="310" height="104" rx="10" class="boundary"/>

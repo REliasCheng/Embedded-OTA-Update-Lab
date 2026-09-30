@@ -18,7 +18,7 @@ Write update flag (0xABCD)
 System reset → Bootloader
 ```
 
-版本判断基于字符串是否相同。当前代码没有 SemVer 数值排序、最低允许版本、硬件兼容矩阵或 Anti-rollback counter。
+版本判断只检查字符串是否相同，用于决定是否进入更新流程。当前代码没有 SemVer 数值排序、最低允许版本、硬件兼容矩阵或 Anti-rollback counter。
 
 ## Bootloader 侧交接
 
@@ -26,7 +26,7 @@ Bootloader 读取 Update Info 区中的更新标志。无更新时进入固定 A
 
 ## 与传输层的边界
 
-Wi-Fi、AT command 与 MQTT 只为 OTA 提供 control/data transport。网络连接本身不是该仓库要展开的通用 Wireless Architecture。
+Wi-Fi、AT command 与 MQTT 只为 OTA 提供 control/data transport。Metadata notification 和 update intent 属于 control plane；firmware block request/response 属于 data transport。网络连接本身不是该仓库要展开的通用 Wireless Architecture。
 
 ## 工程入口
 

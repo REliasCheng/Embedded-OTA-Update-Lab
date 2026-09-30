@@ -21,6 +21,8 @@ Application at 0x08004000
 - CRC-16/XMODEM packet 校验；
 - Flash 擦写与 Bootloader/Application 交接。
 
+该系统属于 UART IAP，不使用 Wi-Fi、MQTT 或远程 OTA control plane。
+
 ## 工程入口
 
 - [IAP Bootloader](bootloader/course/)

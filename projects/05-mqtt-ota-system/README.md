@@ -21,6 +21,10 @@ bootloader/course/   MQTT block download, CRC, staging, copy, boot
 - Active App + Staging Backup；
 - update flag、version parameter 与固定地址启动。
 
+## 当前边界
+
+Staging Backup 不是可启动 Slot B；CRC 用于 block error detection，不等同于 firmware signature、加密或来源认证。当前也没有 automatic rollback、persistent resume 或 power-loss recovery 的运行验证。
+
 ## 工程入口
 
 - [OTA Application](application/course/)

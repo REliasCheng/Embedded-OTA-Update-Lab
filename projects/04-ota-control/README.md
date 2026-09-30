@@ -16,7 +16,7 @@ Update Intent / Flag
 System Reset → Bootloader
 ```
 
-版本策略基于字符串相等性判断；当前工程没有语义版本排序或 Anti-rollback 规则。
+版本判断只检查字符串是否相等；当前工程没有语义版本排序或 Anti-rollback 规则。该目录聚焦 Application 侧 control plane，不代表固件块已经在此工程中完成下载与写入。
 
 ## 工程入口
 
