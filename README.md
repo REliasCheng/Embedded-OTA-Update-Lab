@@ -1,126 +1,89 @@
-# 嵌入式 OTA 升级实验室
-## Embedded OTA Update Lab
+# Embedded-OTA-Update-Lab
 
-基于 GD32F407VE / ARM Cortex-M4，围绕 Bootloader、Application Offset、UART/YMODEM IAP、MQTT 固件分块传输、Flash 更新与 CRC 检查组织的嵌入式固件升级仓库。
+基于 GD32F407VE / ARM Cortex-M4 的嵌入式固件更新架构实践仓库，重点展示 Bootloader、UART/YMODEM IAP、MQTT 分块传输、Flash 布局和 CRC 完整性检查。
+
+## Overview
+
+仓库围绕 Cortex-M 固件更新的基础机制组织独立系统：内部 Flash 擦写建立存储基础，Bootloader 与 Application 使用固定地址和向量表偏移完成启动交接，UART/YMODEM 提供本地 IAP，MQTT block transport 提供网络固件传输路径。
+
+本地 IAP 与网络传输使用不同的数据入口，但共享 Bootloader、Flash programming、Application handoff 和 CRC 错误检测基础。仓库展示的是更新架构与代码路径，不描述为完整、生产级或已经在线验证的 OTA 产品。
+
+## Platform & Technology
+
+| Field | Value |
+| --- | --- |
+| Language | C |
+| Platform | GD32F407VE / ARM Cortex-M4 |
+| Toolchain | Keil MDK-ARM, ArmClang, GigaDevice GD32F4xx DFP |
+| Architecture | Bootloader, UART/YMODEM IAP, MQTT block transport, Flash layout, CRC integrity check |
+| Verification | Source and project-configuration review; build, hardware and runtime status are listed below |
+
+## Architecture
 
 ![Embedded OTA system stack](assets/images/architecture/ota-system-stack.svg)
 
-**Platform:** GD32F407VE / Cortex-M4 · **Bootloader:** `0x08000000` · **Applications:** `0x08004000` / `0x08008000` · **Systems:** 5 · **Keil Projects:** 8
-
-## 👋 项目简介 | Overview
-
-仓库沿 Flash programming、Bootloader/Application split、UART/YMODEM IAP、OTA control plane 和 MQTT block transport 组织 5 条递进主线。Bootloader 与 Application 按系统配对保存，便于同时核对 link address、vector-table offset、传输协议和启动交接。
-
-IAP 描述设备内部的固件接收与写入机制；Network OTA 在此基础上增加远程元数据、分块传输和更新状态。两者不是同义词，网络连接本身也不等于完整 OTA 系统。
-
-## ⚙ 技术范围 | Technical Scope
-
-- **Flash Foundation**：内部 Flash 擦除、写入、读取与分区边界。
-- **Boot Handoff**：初始 MSP、Reset Vector、固定地址跳转与 Application VTOR relocation。
-- **UART / YMODEM IAP**：128/1024-byte packet、序号、ACK/NAK/EOT 与 CRC-16/XMODEM。
-- **OTA Control Plane**：版本元数据、更新意图、更新标志与复位交接。
-- **MQTT Block Transport**：ESP8266 类 AT 模组、Aliyun IoT OTA topic、分块请求与 CRC-16/IBM。
-- **Image State**：Active App、Staging Backup、Update Info 与 Parameters。
-
-## 🧠 Bootloader 架构 | Bootloader Architecture
+仓库能力按以下路径递进：
 
 ```text
-Reset
-  ↓
-Bootloader at 0x08000000
-  ├── no update → validate initial MSP → fixed Application handoff
-  └── update    → receive/copy image → update state → Application handoff
+Bootloader
+      ↓
+UART / YMODEM IAP
+      ↓
+MQTT Transport
+      ↓
+CRC Integrity Check
 ```
 
-基础与 YMODEM IAP 系统使用 `0x08004000` Application；最终 MQTT OTA 系统使用 `0x08008000` Application。配对工程的 link address 与 `VTOR` offset 必须一致。
+运行时，UART/YMODEM 与 MQTT 是两条独立 Transport：前者将 packet 写入固定 Application 区，后者将 firmware block 写入 Staging Backup，再复制到固定 Active App。两条路径都依赖 Bootloader 和内部 Flash，但不是同一个连续传输链。
 
-- [Bootloader Architecture](docs/bootloader-architecture.md)
-- [Application Jump](docs/application-jump.md)
+Staging Backup 只是下载暂存和复制来源，不是可启动 Slot B 或 A/B Partition。CRC 只用于传输或存储错误检测，不提供加密、数字签名、来源认证、Secure OTA 或 Automatic Rollback。
 
-## 🗺 Flash 布局 | Flash Layout
+## Key Features
 
-![OTA flash memory map](assets/images/diagram/flash-memory-map.svg)
+| Capability | Implementation Entry |
+| --- | --- |
+| Bootloader structure | [Bootloader Architecture](docs/bootloader-architecture.md) 与 [Application Jump](docs/application-jump.md) 说明 MSP、Reset Vector、固定地址跳转和 VTOR offset |
+| Flash layout | [Flash Layout](docs/flash-layout.md) 记录 Bootloader、Active App、Staging Backup、Update Info 和 Parameters 的边界 |
+| UART/YMODEM IAP | [YMODEM IAP](projects/03-ymodem-iap/) 使用 packet sequence、ACK/NAK/EOT 和 CRC-16/XMODEM 接收固件 |
+| MQTT block transport | [MQTT OTA System](projects/05-mqtt-ota-system/) 通过 ESP8266 类 AT 模组和 MQTT topic 请求固件块 |
+| CRC integrity verification | [Image Integrity](docs/image-integrity.md) 区分 packet/block CRC、whole-image validation 与安全认证能力 |
 
-最终 OTA 布局由 32 KiB Bootloader、237 KiB Active App、237 KiB Staging Backup、2 KiB Update Info 和 4 KiB Parameters 组成。Staging Backup 是下载暂存与复制来源，不是可启动 Slot B。基础/IAP 系统的 `0x08004000` Application 布局单独记录在 [Flash Layout](docs/flash-layout.md) 中。
-
-## 📦 IAP 与固件传输 | IAP & Firmware Transport
-
-```text
-Local IAP:   Host File → UART / YMODEM → Packet CRC → Flash at 0x08004000
-Network OTA: Aliyun Metadata / Blocks → MQTT / AT → Block CRC → Staging Flash
-```
-
-YMODEM 负责本地 UART firmware transport；最终 OTA 系统通过 USART2 控制 ESP8266 类 AT 模组，并使用 Aliyun MQTT topic 取得元数据和固件块。两条路径最终都依赖 Bootloader 与内部 Flash 更新机制。
-
-- [UART / YMODEM IAP](docs/ymodem-iap.md)
-- [OTA Control Plane](docs/ota-control-plane.md)
-- [MQTT Block Transport](docs/mqtt-block-transport.md)
-
-## 📡 OTA 数据通路 | OTA Data Flow
-
-![Firmware update flow](assets/images/diagram/firmware-update-flow.svg)
-
-最终 OTA Application 处理版本元数据和更新意图；复位后，Bootloader 请求固件块、执行 CRC-16/IBM 检查、写入 Staging Backup，并将镜像复制到固定 Active App 区。CRC 用于错误检测，不提供数字签名或来源认证。
-
-## 🚀 核心系统 | Featured Systems
-
-### [Flash Programming Foundation](projects/01-flash-basics/)
-
-GD32F407 内部 Flash 的 sector-aware erase、read 与 write 基础。
-
-### [Bootloader / Application Split](projects/02-boot-app-split/)
-
-Bootloader 与 `0x08004000` Application 配对，包含 MSP/Reset Vector 跳转和 `VTOR` offset。
-
-### [UART / YMODEM IAP](projects/03-ymodem-iap/)
-
-通过 UART/YMODEM 接收 raw firmware，以 CRC-16/XMODEM 检查 packet 后写入 Application 区。
-
-### [OTA Control Plane](projects/04-ota-control/)
-
-Application 侧的版本元数据、更新确认、更新标志和复位交接。
-
-### [MQTT OTA System](projects/05-mqtt-ota-system/)
-
-Application/Bootloader 配对系统：Aliyun MQTT 固件分块传输、Staging Flash、Active App copy 与固定地址启动。
-
-[查看完整工程索引](projects/)
-
-## 📂 仓库结构 | Repository Structure
+## Project Structure
 
 ```text
 Embedded-OTA-Update-Lab/
-├── assets/images/           # OTA stack、Flash Map 与更新流程图
-├── docs/                    # Bootloader、IAP、Transport、CRC 与实现边界
-├── projects/                # 5 条主线系统；Bootloader/Application 成对组织
-├── SOURCE_SELECTION_MANIFEST.csv
-└── MIGRATION_HASH_VERIFICATION.csv
+├── projects/01-flash-basics/       # Internal Flash 擦除、读取与写入
+├── projects/02-boot-app-split/     # Bootloader/Application 地址分离
+├── projects/03-ymodem-iap/         # UART/YMODEM 本地 IAP
+├── projects/04-ota-control/        # 版本元数据、更新标志与复位交接
+├── projects/05-mqtt-ota-system/    # MQTT 分块、Staging Flash 与 Active App copy
+├── docs/                           # Bootloader、Transport、CRC 与失败边界
+└── assets/images/                  # 已有自绘架构与数据流 SVG
 ```
 
-## 🛠 开发环境 | Development Environment
-
-- GD32F407VE / ARM Cortex-M4
-- Keil MDK-ARM / ArmClang project definitions
-- GigaDevice GD32F4xx DFP 3.2.0
-- GD32F4xx Standard Peripheral Library / CMSIS
-- ESP8266-class AT Wi-Fi module in the network OTA path
-
-当前机器未发现可直接调用的 Keil `UV4.exe`，8 个 Keil 工程均未在本阶段自动构建。历史构建日志未纳入公开仓库，也不作为本轮构建通过证据。详见 [Development Environment](docs/development-environment.md)。
-
-## 📖 技术文档 | Documentation
+## Documentation
 
 - [Bootloader Architecture](docs/bootloader-architecture.md)
 - [Flash Layout](docs/flash-layout.md)
 - [Application Jump](docs/application-jump.md)
-- [UART / YMODEM IAP](docs/ymodem-iap.md)
+- [UART/YMODEM IAP](docs/ymodem-iap.md)
 - [OTA Control Plane](docs/ota-control-plane.md)
 - [MQTT Block Transport](docs/mqtt-block-transport.md)
 - [Image Integrity](docs/image-integrity.md)
 - [Failure Boundaries](docs/failure-boundaries.md)
 - [Development Environment](docs/development-environment.md)
 
-## 📜 来源与许可 | License
+## Verification
 
-公开快照排除了构建产物、历史日志、IDE 用户状态、固件二进制和许可不明视觉资源。最终 OTA 工程中的网络与云端凭据已在公开派生副本中替换为占位符；变更范围记录在两个迁移 Manifest 中。
+| Verification Type | Status | Boundary |
+| --- | --- | --- |
+| Host Test | N/A | 仓库没有独立的 Host Test 入口 |
+| Build Verification | NOT VERIFIED | Keil 工程定义存在，但仓库未提供与当前公开版本对应的成功构建记录 |
+| Hardware Validation | NOT VERIFIED | 仓库未提供可复核的 Flash、UART/YMODEM、Wi-Fi 或板端启动验证记录 |
+| Runtime Evidence | NOT INCLUDED | 仓库未提供固件传输日志、Flash 写入记录、MQTT 会话或启动交接记录作为运行证据 |
 
-仓库新增 Markdown 与自有 SVG 适用根目录 [LICENSE](LICENSE)。迁移源码保留原有版权头并继续受各自条款约束，详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+源码中的 Flash 地址、CRC 调用、MQTT topic 和日志字符串不等同于构建成功、固件更新完成或安全 OTA 验证。
+
+## License Boundary
+
+根目录 [LICENSE](LICENSE) 仅适用于仓库新增并明确覆盖的 Markdown 文档和自绘 SVG。GD32F4xx/CMSIS 厂商组件、Keil 工程定义以及固件更新参考源码继续适用各自的版权和许可声明，具体边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
