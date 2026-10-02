@@ -2,13 +2,9 @@
 
 基于 GD32F407VE / ARM Cortex-M4 的嵌入式固件更新架构实践仓库，重点展示 Bootloader、UART/YMODEM IAP、MQTT 分块传输、Flash 布局和 CRC 完整性检查。
 
-## Overview
+![Firmware update path](assets/images/architecture/portfolio-overview.svg)
 
-仓库围绕 Cortex-M 固件更新的基础机制组织独立系统：内部 Flash 擦写建立存储基础，Bootloader 与 Application 使用固定地址和向量表偏移完成启动交接，UART/YMODEM 提供本地 IAP，MQTT block transport 提供网络固件传输路径。
-
-本地 IAP 与网络传输使用不同的数据入口，但共享 Bootloader、Flash programming、Application handoff 和 CRC 错误检测基础。仓库展示的是更新架构与代码路径，不描述为完整、生产级或已经在线验证的 OTA 产品。
-
-## Platform & Technology
+## Project Snapshot
 
 | Field | Value |
 | --- | --- |
@@ -17,6 +13,14 @@
 | Toolchain | Keil MDK-ARM, ArmClang, GigaDevice GD32F4xx DFP |
 | Architecture | Bootloader, UART/YMODEM IAP, MQTT block transport, Flash layout, CRC integrity check |
 | Verification | Source and project-configuration review; build, hardware and runtime status are listed below |
+
+> **Project status:** Architecture documented · Host Test not applicable · Build, hardware, and runtime evidence not provided
+
+## Overview
+
+仓库围绕 Cortex-M 固件更新的基础机制组织独立系统：内部 Flash 擦写建立存储基础，Bootloader 与 Application 使用固定地址和向量表偏移完成启动交接，UART/YMODEM 提供本地 IAP，MQTT block transport 提供网络固件传输路径。
+
+本地 IAP 与网络传输使用不同的数据入口，但共享 Bootloader、Flash programming、Application handoff 和 CRC 错误检测基础。仓库展示的是更新架构与代码路径，不描述为完整、生产级或已经在线验证的 OTA 产品。
 
 ## Architecture
 
@@ -47,6 +51,16 @@ Staging Backup 只是下载暂存和复制来源，不是可启动 Slot B 或 A/
 | UART/YMODEM IAP | [YMODEM IAP](projects/03-ymodem-iap/) 使用 packet sequence、ACK/NAK/EOT 和 CRC-16/XMODEM 接收固件 |
 | MQTT block transport | [MQTT OTA System](projects/05-mqtt-ota-system/) 通过 ESP8266 类 AT 模组和 MQTT topic 请求固件块 |
 | CRC integrity verification | [Image Integrity](docs/image-integrity.md) 区分 packet/block CRC、whole-image validation 与安全认证能力 |
+
+## Evidence Map
+
+| Review Target | Existing Entry | Evidence Scope |
+| --- | --- | --- |
+| CRC example | [YMODEM IAP](projects/03-ymodem-iap/) 与 [Image Integrity](docs/image-integrity.md) | 定位 packet/block CRC 调用、参数和错误检测边界 |
+| Protocol flow | [UART/YMODEM IAP](docs/ymodem-iap.md) 与 [MQTT Block Transport](docs/mqtt-block-transport.md) | 对照本地传输与网络分块传输的独立数据路径 |
+| Update sequence | [Bootloader Architecture](docs/bootloader-architecture.md)、[OTA Control Plane](docs/ota-control-plane.md) 与 [Application Jump](docs/application-jump.md) | 检查地址、状态标志、复位和启动交接关系 |
+
+这些入口提供源码和文档级审查路径，不代表固件已经成功传输、写入、启动或通过硬件验证。
 
 ## Project Structure
 
