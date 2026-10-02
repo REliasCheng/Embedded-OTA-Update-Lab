@@ -2,19 +2,21 @@
 
 基于 GD32F407VE / ARM Cortex-M4 的嵌入式固件更新架构实践仓库，重点展示 Bootloader、UART/YMODEM IAP、MQTT 分块传输、Flash 布局和 CRC 完整性检查。
 
+**🔄 Update Pipeline**
+
 ![Firmware update path](assets/images/architecture/portfolio-overview.svg)
 
-## Project Snapshot
+## Update Snapshot
 
-| Field | Value |
+| Update Focus | Current Scope |
 | --- | --- |
-| Language | C |
-| Platform | GD32F407VE / ARM Cortex-M4 |
-| Toolchain | Keil MDK-ARM, ArmClang, GigaDevice GD32F4xx DFP |
-| Architecture | Bootloader, UART/YMODEM IAP, MQTT block transport, Flash layout, CRC integrity check |
-| Verification | Source and project-configuration review; build, hardware and runtime status are listed below |
+| MCU / Boot Control | GD32F407VE / Cortex-M4、Bootloader / Application handoff |
+| Local Transport | UART / YMODEM IAP → fixed Application area |
+| Network Transport | MQTT block transport → Staging Backup → Active App copy |
+| Integrity Boundary | CRC detects transfer/storage errors；no authentication or encryption claim |
+| Evidence | Source and project review；build, transfer, Flash-write and boot evidence not provided |
 
-> **Project status:** Architecture documented · Host Test not applicable · Build, hardware, and runtime evidence not provided
+> 📦 **Evidence:** Update paths documented · Build, transfer, Flash-write, and boot evidence not provided
 
 ## Overview
 
@@ -26,16 +28,14 @@
 
 ![Embedded OTA system stack](assets/images/architecture/ota-system-stack.svg)
 
-仓库能力按以下路径递进：
+### Update Paths
+
+两条 Transport 共享 Flash programming、CRC 错误检测与启动交接边界：
 
 ```text
-Bootloader
-      ↓
-UART / YMODEM IAP
-      ↓
-MQTT Transport
-      ↓
-CRC Integrity Check
+                  ┌─ UART / YMODEM ─┐
+Firmware Source ──┤                  ├── Flash / Staging ── CRC ── Boot Handoff
+                  └─ MQTT Transport ─┘
 ```
 
 运行时，UART/YMODEM 与 MQTT 是两条独立 Transport：前者将 packet 写入固定 Application 区，后者将 firmware block 写入 Staging Backup，再复制到固定 Active App。两条路径都依赖 Bootloader 和内部 Flash，但不是同一个连续传输链。

@@ -1,32 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
-  <title id="title">Firmware update path</title>
-  <desc id="desc">Firmware data passes through a transport path, boot control, CRC checks, and Flash update mechanics.</desc>
-  <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8b949e"/></marker>
-    <style>
-      .bg{fill:#0d1117}.grid{stroke:#30363d;stroke-width:1;opacity:.35}.box{stroke-width:2}.input{fill:#21262d;stroke:#8b949e}.core{fill:#0d419d;stroke:#58a6ff}.hardware{fill:#1f6f3d;stroke:#3fb950}.output{fill:#f0f6fc;stroke:#c9d1d9}.title{font:700 27px system-ui,sans-serif;fill:#f0f6fc}.subtitle{font:16px system-ui,sans-serif;fill:#8b949e}.label{font:700 17px system-ui,sans-serif;fill:#f0f6fc;text-anchor:middle}.detail{font:13px system-ui,sans-serif;fill:#c9d1d9;text-anchor:middle}.dark{fill:#0d1117}.arrow{stroke:#8b949e;stroke-width:3;marker-end:url(#arrow)}.footer{font:14px system-ui,sans-serif;fill:#8b949e;text-anchor:middle}
-    </style>
-  </defs>
-  <rect class="bg" width="1200" height="360" rx="22"/>
-  <path class="grid" d="M0 90H1200M0 270H1200M240 0V360M480 0V360M720 0V360M960 0V360"/>
-  <text class="title" x="50" y="54">Firmware update path</text>
-  <text class="subtitle" x="50" y="84">Package · transport · boot control · integrity · Flash</text>
-  <rect class="box input" x="50" y="140" width="180" height="92" rx="14"/>
-  <text class="label" x="140" y="177">Firmware</text>
-  <text class="detail" x="140" y="205">package / block</text>
-  <rect class="box core" x="280" y="140" width="180" height="92" rx="14"/>
-  <text class="label" x="370" y="177">Transport</text>
-  <text class="detail" x="370" y="205">YMODEM / MQTT</text>
-  <rect class="box core" x="510" y="140" width="180" height="92" rx="14"/>
-  <text class="label" x="600" y="177">Bootloader</text>
-  <text class="detail" x="600" y="205">handoff</text>
-  <rect class="box hardware" x="740" y="140" width="180" height="92" rx="14"/>
-  <text class="label" x="830" y="177">CRC Check</text>
-  <text class="detail" x="830" y="205">error detect</text>
-  <rect class="box output" x="970" y="140" width="180" height="92" rx="14"/>
-  <text class="label dark" x="1060" y="177">Flash Update</text>
-  <text class="detail dark" x="1060" y="205">active image</text>
-  <path class="arrow" d="M230 186H270"/><path class="arrow" d="M460 186H500"/><path class="arrow" d="M690 186H730"/><path class="arrow" d="M920 186H960"/>
-  <text class="footer" x="600" y="305">CRC detects transfer or storage errors; this is not secure OTA, A/B OTA, or automatic rollback.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+  <title id="title">Firmware update pipeline</title><desc id="desc">A firmware source branches into independent UART YMODEM and MQTT transports, then converges on Flash staging or application storage, CRC error detection, and boot handoff.</desc>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#8b949e"/></marker><style>.bg{fill:#0d1117}.grid{stroke:#30363d;opacity:.28}.box{stroke-width:2}.input{fill:#21262d;stroke:#8b949e}.core{fill:#0d419d;stroke:#58a6ff}.hardware{fill:#1f6f3d;stroke:#3fb950}.output{fill:#f0f6fc;stroke:#c9d1d9}.title{font:700 28px system-ui,sans-serif;fill:#f0f6fc}.sub{font:16px system-ui,sans-serif;fill:#8b949e}.label{font:700 16px system-ui,sans-serif;fill:#f0f6fc;text-anchor:middle}.detail{font:13px system-ui,sans-serif;fill:#c9d1d9;text-anchor:middle}.dark{fill:#0d1117}.arrow{fill:none;stroke:#8b949e;stroke-width:3;marker-end:url(#arrow)}</style></defs>
+  <rect class="bg" width="1200" height="470" rx="22"/><path class="grid" d="M0 105H1200M0 370H1200M300 0V470M600 0V470M900 0V470"/>
+  <text class="title" x="50" y="52">Firmware Update Pipeline</text><text class="sub" x="50" y="82">Independent transports · explicit Flash model · CRC boundary · boot handoff</text>
+  <rect class="box input" x="45" y="205" width="190" height="86" rx="14"/><text class="label" x="140" y="239">Firmware Source</text><text class="detail" x="140" y="266">image / block</text>
+  <rect class="box core" x="315" y="135" width="210" height="86" rx="14"/><text class="label" x="420" y="169">UART / YMODEM</text><text class="detail" x="420" y="196">local IAP path</text>
+  <rect class="box core" x="315" y="285" width="210" height="86" rx="14"/><text class="label" x="420" y="319">MQTT Transport</text><text class="detail" x="420" y="346">network block path</text>
+  <rect class="box hardware" x="610" y="205" width="210" height="86" rx="14"/><text class="label" x="715" y="239">Flash / Staging</text><text class="detail" x="715" y="266">fixed regions</text>
+  <rect class="box core" x="895" y="135" width="210" height="86" rx="14"/><text class="label" x="1000" y="169">CRC Check</text><text class="detail" x="1000" y="196">error detection</text>
+  <rect class="box output" x="895" y="285" width="210" height="86" rx="14"/><text class="label dark" x="1000" y="319">Boot Handoff</text><text class="detail dark" x="1000" y="346">MSP · vector</text>
+  <path class="arrow" d="M235 235L315 178M235 261L315 328M525 178L610 232M525 328L610 264M820 248L895 190M1000 221V285"/>
+  <text class="detail" x="715" y="414">Staging is not Slot B · CRC is not authentication or encryption</text>
 </svg>
-
