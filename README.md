@@ -75,12 +75,21 @@ Embedded-OTA-Update-Lab/
 
 ## Verification
 
-| Verification Type | Status | Boundary |
-| --- | --- | --- |
-| Host Test | Not Applicable | 仓库没有独立的 Host Test 入口 |
-| Build Verification | Not Provided | Keil 工程定义存在，但仓库未提供与当前公开版本对应的成功构建记录 |
-| Hardware Validation | Not Provided | 仓库未提供可复核的 Flash、UART/YMODEM、Wi-Fi 或板端启动验证记录 |
-| Runtime Evidence | Not Provided | 仓库未提供固件传输日志、Flash 写入记录、MQTT 会话或启动交接记录作为运行证据 |
+### Host Test
+
+**Status:** Not Applicable. 仓库没有独立的 Host Test 入口。
+
+### Build Verification
+
+**Status:** Not Provided. Keil 工程定义存在，但仓库未提供与当前公开版本对应的成功构建记录。
+
+### Hardware Validation
+
+**Status:** Not Provided. 仓库未提供可复核的 Flash、UART/YMODEM、Wi-Fi 或板端启动验证记录。
+
+### Runtime Evidence
+
+**Status:** Not Provided. 仓库未提供固件传输日志、Flash 写入记录、MQTT 会话或启动交接记录作为运行证据。
 
 源码中的 Flash 地址、CRC 调用、MQTT topic 和日志字符串不等同于构建成功、固件更新完成或安全 OTA 验证。
 
