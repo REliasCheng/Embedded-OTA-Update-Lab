@@ -18,13 +18,13 @@
 
 > 📦 **Evidence:** Update paths documented · Build, transfer, Flash-write, and boot evidence not provided
 
-## Overview
+## 📌 Overview
 
 仓库围绕 Cortex-M 固件更新的基础机制组织独立系统：内部 Flash 擦写建立存储基础，Bootloader 与 Application 使用固定地址和向量表偏移完成启动交接，UART/YMODEM 提供本地 IAP，MQTT block transport 提供网络固件传输路径。
 
 本地 IAP 与网络传输使用不同的数据入口，但共享 Bootloader、Flash programming、Application handoff 和 CRC 错误检测基础。仓库展示的是更新架构与代码路径，不描述为完整、生产级或已经在线验证的 OTA 产品。
 
-## Architecture
+## 🏗️ Architecture
 
 ![Embedded OTA system stack](assets/images/architecture/ota-system-stack.svg)
 
@@ -42,7 +42,7 @@ Firmware Source ──┤                  ├── Flash / Staging ── CRC 
 
 Staging Backup 只是下载暂存和复制来源，不是可启动 Slot B 或 A/B Partition。CRC 只用于传输或存储错误检测，不提供加密、数字签名、来源认证、Secure OTA 或 Automatic Rollback。
 
-## Key Features
+## ✨ Key Features
 
 | Capability | Implementation Entry |
 | --- | --- |
@@ -52,7 +52,7 @@ Staging Backup 只是下载暂存和复制来源，不是可启动 Slot B 或 A/
 | MQTT block transport | [MQTT OTA System](projects/05-mqtt-ota-system/) 通过 ESP8266 类 AT 模组和 MQTT topic 请求固件块 |
 | CRC integrity verification | [Image Integrity](docs/image-integrity.md) 区分 packet/block CRC、whole-image validation 与安全认证能力 |
 
-## Evidence Map
+## 🗺️ Evidence Map
 
 | Review Target | Existing Entry | Evidence Scope |
 | --- | --- | --- |
@@ -62,7 +62,7 @@ Staging Backup 只是下载暂存和复制来源，不是可启动 Slot B 或 A/
 
 这些入口提供源码和文档级审查路径，不代表固件已经成功传输、写入、启动或通过硬件验证。
 
-## Project Structure
+## 📂 Project Structure
 
 ```text
 Embedded-OTA-Update-Lab/
@@ -75,7 +75,7 @@ Embedded-OTA-Update-Lab/
 └── assets/images/                  # 已有自绘架构与数据流 SVG
 ```
 
-## Documentation
+## 📚 Documentation
 
 - [Bootloader Architecture](docs/bootloader-architecture.md)
 - [Flash Layout](docs/flash-layout.md)
@@ -87,21 +87,21 @@ Embedded-OTA-Update-Lab/
 - [Failure Boundaries](docs/failure-boundaries.md)
 - [Development Environment](docs/development-environment.md)
 
-## Verification
+## 🧪 Verification
 
-### Host Test
+### 💻 Host Test
 
 **Status:** Not Applicable. 仓库没有独立的 Host Test 入口。
 
-### Build Verification
+### 🔨 Build Verification
 
 **Status:** Not Provided. Keil 工程定义存在，但仓库未提供与当前公开版本对应的成功构建记录。
 
-### Hardware Validation
+### 🔌 Hardware Validation
 
 **Status:** Not Provided. 仓库未提供可复核的 Flash、UART/YMODEM、Wi-Fi 或板端启动验证记录。
 
-### Runtime Evidence
+### 📊 Runtime Evidence
 
 **Status:** Not Provided. 仓库未提供固件传输日志、Flash 写入记录、MQTT 会话或启动交接记录作为运行证据。
 
