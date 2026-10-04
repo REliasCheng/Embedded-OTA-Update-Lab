@@ -1,6 +1,6 @@
 # Embedded-OTA-Update-Lab
 
-基于 GD32F407VE / ARM Cortex-M4 的嵌入式固件更新架构实践仓库，重点展示 Bootloader、UART/YMODEM IAP、MQTT 分块传输、Flash 布局和 CRC 完整性检查。
+面向 Cortex-M 的 Bootloader、Flash layout、UART/YMODEM、MQTT transport 与 CRC 边界架构文档实验。
 
 **🔄 Update Pipeline**
 
@@ -10,27 +10,23 @@
 
 | Update Focus | Current Scope |
 | --- | --- |
-| MCU / Boot Control | GD32F407VE / Cortex-M4、Bootloader / Application handoff |
-| Local Transport | UART / YMODEM IAP → fixed Application area |
-| Network Transport | MQTT block transport → Staging Backup → Active App copy |
-| Integrity Boundary | CRC detects transfer/storage errors；no authentication or encryption claim |
-| Evidence | Source and project review；build, transfer, Flash-write and boot evidence not provided |
-
-> 📦 **Evidence:** Update paths documented · Build, transfer, Flash-write, and boot evidence not provided
+| Repository Type | Firmware Update Architecture Lab |
+| Reference MCU | GD32F407VE / ARM Cortex-M4 |
+| Local Path | UART / YMODEM IAP model |
+| Network Path | MQTT block transport model |
+| Integrity Boundary | CRC error detection；no authentication, encryption or rollback claim |
+| Public Implementation | Not included in the current default branch |
+| Verification | Architecture review；build, Flash-write and boot evidence not provided |
 
 ## 📌 Overview
 
-仓库围绕 Cortex-M 固件更新的基础机制组织独立系统：内部 Flash 擦写建立存储基础，Bootloader 与 Application 使用固定地址和向量表偏移完成启动交接，UART/YMODEM 提供本地 IAP，MQTT block transport 提供网络固件传输路径。
+仓库以原创文档和 SVG 描述 Bootloader / Application 边界、Flash 分区、向量跳转、UART/YMODEM IAP、MQTT 分块传输、更新元数据和 CRC 错误检测。
 
-本地 IAP 与网络传输使用不同的数据入口，但共享 Bootloader、Flash programming、Application handoff 和 CRC 错误检测基础。仓库展示的是更新架构与代码路径，不描述为完整、生产级或已经在线验证的 OTA 产品。
+当前默认分支不分发课程 Bootloader、Flash/YMODEM/ESP8266/MQTT 应用代码、GD32/CMSIS 厂商组件、startup 或 Keil 工程。Staging Backup 不是可启动 Slot B；文档不声明 A/B OTA、Automatic Rollback、Secure OTA、签名验证或生产级更新能力。
 
 ## 🏗️ Architecture
 
 ![Embedded OTA system stack](assets/images/architecture/ota-system-stack.svg)
-
-### Update Paths
-
-两条 Transport 共享 Flash programming、CRC 错误检测与启动交接边界：
 
 ```text
                   ┌─ UART / YMODEM ─┐
@@ -38,41 +34,28 @@ Firmware Source ──┤                  ├── Flash / Staging ── CRC 
                   └─ MQTT Transport ─┘
 ```
 
-运行时，UART/YMODEM 与 MQTT 是两条独立 Transport：前者将 packet 写入固定 Application 区，后者将 firmware block 写入 Staging Backup，再复制到固定 Active App。两条路径都依赖 Bootloader 和内部 Flash，但不是同一个连续传输链。
-
-Staging Backup 只是下载暂存和复制来源，不是可启动 Slot B 或 A/B Partition。CRC 只用于传输或存储错误检测，不提供加密、数字签名、来源认证、Secure OTA 或 Automatic Rollback。
+UART/YMODEM 与 MQTT 是独立 transport model。CRC 只表达传输或存储错误检测，不提供来源认证、保密性或防回滚能力。
 
 ## ✨ Key Features
 
-| Capability | Implementation Entry |
+| Capability | Documentation Entry |
 | --- | --- |
-| Bootloader structure | [Bootloader Architecture](docs/bootloader-architecture.md) 与 [Application Jump](docs/application-jump.md) 说明 MSP、Reset Vector、固定地址跳转和 VTOR offset |
-| Flash layout | [Flash Layout](docs/flash-layout.md) 记录 Bootloader、Active App、Staging Backup、Update Info 和 Parameters 的边界 |
-| UART/YMODEM IAP | [YMODEM IAP](projects/03-ymodem-iap/) 使用 packet sequence、ACK/NAK/EOT 和 CRC-16/XMODEM 接收固件 |
-| MQTT block transport | [MQTT OTA System](projects/05-mqtt-ota-system/) 通过 ESP8266 类 AT 模组和 MQTT topic 请求固件块 |
-| CRC integrity verification | [Image Integrity](docs/image-integrity.md) 区分 packet/block CRC、whole-image validation 与安全认证能力 |
-
-## 🗺️ Evidence Map
-
-| Review Target | Existing Entry | Evidence Scope |
-| --- | --- | --- |
-| CRC example | [YMODEM IAP](projects/03-ymodem-iap/) 与 [Image Integrity](docs/image-integrity.md) | 定位 packet/block CRC 调用、参数和错误检测边界 |
-| Protocol flow | [UART/YMODEM IAP](docs/ymodem-iap.md) 与 [MQTT Block Transport](docs/mqtt-block-transport.md) | 对照本地传输与网络分块传输的独立数据路径 |
-| Update sequence | [Bootloader Architecture](docs/bootloader-architecture.md)、[OTA Control Plane](docs/ota-control-plane.md) 与 [Application Jump](docs/application-jump.md) | 检查地址、状态标志、复位和启动交接关系 |
-
-这些入口提供源码和文档级审查路径，不代表固件已经成功传输、写入、启动或通过硬件验证。
+| Boot/Application boundary | [Bootloader Architecture](docs/bootloader-architecture.md) |
+| Vector handoff | [Application Jump](docs/application-jump.md) |
+| Flash partition model | [Flash Layout](docs/flash-layout.md) |
+| UART/YMODEM model | [YMODEM IAP](docs/ymodem-iap.md) |
+| MQTT block model | [MQTT Block Transport](docs/mqtt-block-transport.md) |
+| Integrity and failure boundary | [Image Integrity](docs/image-integrity.md) and [Failure Boundaries](docs/failure-boundaries.md) |
 
 ## 📂 Project Structure
 
 ```text
 Embedded-OTA-Update-Lab/
-├── projects/01-flash-basics/       # Internal Flash 擦除、读取与写入
-├── projects/02-boot-app-split/     # Bootloader/Application 地址分离
-├── projects/03-ymodem-iap/         # UART/YMODEM 本地 IAP
-├── projects/04-ota-control/        # 版本元数据、更新标志与复位交接
-├── projects/05-mqtt-ota-system/    # MQTT 分块、Staging Flash 与 Active App copy
-├── docs/                           # Bootloader、Transport、CRC 与失败边界
-└── assets/images/                  # 已有自绘架构与数据流 SVG
+├── README.md
+├── LICENSE
+├── THIRD_PARTY_NOTICES.md
+├── assets/images/  # Repository-authored architecture and flow SVG
+└── docs/           # Firmware-update architecture documentation
 ```
 
 ## 📚 Documentation
@@ -80,7 +63,7 @@ Embedded-OTA-Update-Lab/
 - [Bootloader Architecture](docs/bootloader-architecture.md)
 - [Flash Layout](docs/flash-layout.md)
 - [Application Jump](docs/application-jump.md)
-- [UART/YMODEM IAP](docs/ymodem-iap.md)
+- [YMODEM IAP](docs/ymodem-iap.md)
 - [OTA Control Plane](docs/ota-control-plane.md)
 - [MQTT Block Transport](docs/mqtt-block-transport.md)
 - [Image Integrity](docs/image-integrity.md)
@@ -89,24 +72,13 @@ Embedded-OTA-Update-Lab/
 
 ## 🧪 Verification
 
-### 💻 Host Test
-
-**Status:** Not Applicable. 仓库没有独立的 Host Test 入口。
-
-### 🔨 Build Verification
-
-**Status:** Not Provided. Keil 工程定义存在，但仓库未提供与当前公开版本对应的成功构建记录。
-
-### 🔌 Hardware Validation
-
-**Status:** Not Provided. 仓库未提供可复核的 Flash、UART/YMODEM、Wi-Fi 或板端启动验证记录。
-
-### 📊 Runtime Evidence
-
-**Status:** Not Provided. 仓库未提供固件传输日志、Flash 写入记录、MQTT 会话或启动交接记录作为运行证据。
-
-源码中的 Flash 地址、CRC 调用、MQTT topic 和日志字符串不等同于构建成功、固件更新完成或安全 OTA 验证。
+| Verification Layer | Status | Boundary |
+| --- | --- | --- |
+| Host Test | NOT PROVIDED | No public parser, state machine, or CRC test implementation |
+| Build Verification | NOT PROVIDED | No current Keil project or firmware source is distributed |
+| Hardware Validation | NOT PROVIDED | No reviewable Flash, UART, network, or boot result |
+| Runtime Evidence | NOT PROVIDED | No transfer log, Flash trace, MQTT session, or boot record |
 
 ## License Boundary
 
-根目录 [LICENSE](LICENSE) 仅适用于仓库新增并明确覆盖的 Markdown 文档和自绘 SVG。GD32F4xx/CMSIS 厂商组件、Keil 工程定义以及固件更新参考源码继续适用各自的版权和许可声明，具体边界见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+根目录 MIT License 仅覆盖当前默认分支中仓库维护者编写的文档、配置与自绘 SVG。课程源码、GD32/CMSIS、startup、Keil 工程和第三方 transport 实现未包含在当前默认分支；旧提交中的历史文件仍需单独评估。详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

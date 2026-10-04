@@ -1,6 +1,6 @@
 # Image Integrity
 
-当前工程包含三类 CRC，用于不同层级的数据错误检测。它们不验证 firmware 来源，也没有构成 firmware authentication。
+架构模型区分三类 CRC，用于不同层级的数据错误检测。它们不验证 firmware 来源，也不构成 firmware authentication。
 
 | Mechanism | Scope | Polynomial / form | Engineering role |
 |---|---|---|---|
@@ -17,11 +17,6 @@
 - Authenticated image manifest；
 - Anti-rollback version counter。
 
-CRC 可以发现部分传输或存储错误，但不能证明映像来源，也不能抵抗恶意篡改。因此仓库不使用 `Secure OTA`、`Authenticated Firmware` 或 `Verified Boot` 描述当前实现。
-
-## 工程入口
-
-- [YMODEM IAP](../projects/03-ymodem-iap/)
-- [MQTT OTA System](../projects/05-mqtt-ota-system/)
+CRC 可以发现部分传输或存储错误，但不能证明映像来源，也不能抵抗恶意篡改。因此仓库不使用 `Secure OTA`、`Authenticated Firmware` 或 `Verified Boot` 描述当前架构。
 
 [上一篇：MQTT Block Transport](mqtt-block-transport.md) · [返回 README](../README.md) · [下一篇：Failure Boundaries](failure-boundaries.md)

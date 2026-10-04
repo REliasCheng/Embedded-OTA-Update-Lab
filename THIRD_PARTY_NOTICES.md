@@ -1,15 +1,13 @@
 # Third-Party Notices
 
-`projects/**/course/` 保存筛选后的固件升级参考工程。除 Manifest 明确标记的两份 `SANITIZED_DERIVATIVE` 外，迁移文件保持原始字节不变；原有版权头和许可证继续适用。
+## Current Default Branch
 
-仓库根目录的 MIT License 仅适用于本仓库新增的 Markdown 文档、自有 SVG 与后续明确标注的原创代码，不覆盖迁移的源资料或第三方组件。
+The current default branch distributes no course Bootloader, Flash, YMODEM, ESP8266, MQTT, or OTA application source; no GD32/CMSIS vendor component; no startup file, Keil project, external image, font, or firmware binary.
 
-实际迁移的第三方内容包括：
+## Referenced Technologies
 
-- GigaDevice GD32F4xx device support、Standard Peripheral Library、启动文件及其保留的版权与许可声明；
-- ARM CMSIS core support 及其保留的版权与许可声明；
-- Keil MDK-ARM 工程定义，按相应工具与器件包条款使用。
+Documentation may refer to GD32F407, ARM Cortex-M, CMSIS, YMODEM, MQTT, ESP8266-class AT interfaces, and CRC algorithms for architectural context. Their software and vendor materials are not redistributed or relicensed by this branch.
 
-Bootloader、Flash、YMODEM、ESP8266 AT 与 OTA 应用层文件作为所提供源资料的筛选快照保留；本仓库不通过根目录 License 对其重新授权。构建日志、IDE 用户状态、固件二进制、Office/PDF/XMind、draw.io 和许可不明视觉资源均未纳入公开快照。
+## Excluded Source Material
 
-迁移来源、目标路径、模式与 SHA256 记录在 [SOURCE_SELECTION_MANIFEST.csv](SOURCE_SELECTION_MANIFEST.csv)，迁移后复核结果见 [MIGRATION_HASH_VERIFICATION.csv](MIGRATION_HASH_VERIFICATION.csv)。
+Course applications, vendor libraries, generated projects, sanitized derivatives of unclear origin, and files without established redistribution permission are excluded from the current default branch. Earlier commits remain reachable because repository history was not rewritten.
