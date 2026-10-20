@@ -1,0 +1,14 @@
+name: Host range tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  flash-plan:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5.1.0
+      - name: Test documented Flash ranges
+        run: python3 -m unittest discover -s tests -v

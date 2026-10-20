@@ -19,8 +19,8 @@
 ## Future Verification
 
 - 擦除与写入范围必须严格落在目标分区内。
-- block 和 copy loop 必须覆盖整倍数与尾包边界。
-- 下载大小必须在擦写前检查完整 Staging 上限。
+- Host 范围规划器已测试 256-byte 整倍数、尾块和完整 Staging / Active 容量；目标端 block/copy loop 仍需实现和验证。
+- 实际下载路径仍须在擦写前检查完整 Staging 上限；Host 规划器不能证明设备端执行了此检查。
 - 版本、更新标志和 copy 失败路径需要故障注入验证。
 - Link region 必须限制在 Active App 分区大小内。
 

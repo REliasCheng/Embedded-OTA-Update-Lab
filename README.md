@@ -15,14 +15,14 @@
 | Local Path | UART / YMODEM IAP model |
 | Network Path | MQTT block transport model |
 | Integrity Boundary | CRC error detection；no authentication, encryption or rollback claim |
-| Public Implementation | Not included in the current default branch |
-| Verification | Architecture review；build, Flash-write and boot evidence not provided |
+| Public Implementation | Host-only Flash byte-range planner; no firmware implementation |
+| Verification | Host boundary tests；target build, Flash-write and boot evidence not provided |
 
 ## 📌 Overview
 
 仓库以原创文档和 SVG 描述 Bootloader / Application 边界、Flash 分区、向量跳转、UART/YMODEM IAP、MQTT 分块传输、更新元数据和 CRC 错误检测。
 
-当前默认分支不分发课程 Bootloader、Flash/YMODEM/ESP8266/MQTT 应用代码、GD32/CMSIS 厂商组件、startup 或 Keil 工程。Staging Backup 不是可启动 Slot B；文档不声明 A/B OTA、Automatic Rollback、Secure OTA、签名验证或生产级更新能力。
+当前默认分支不分发课程 Bootloader、Flash/YMODEM/ESP8266/MQTT 应用代码、GD32/CMSIS 厂商组件、startup 或 Keil 工程。新增的 [Host 范围规划器](host_tools/flash_plan.py) 仅按本文参考分区计算 256-byte 整块与尾块地址，不执行 Flash 操作。Staging Backup 不是可启动 Slot B；文档不声明 A/B OTA、Automatic Rollback、Secure OTA、签名验证或生产级更新能力。
 
 ## 🏗️ Architecture
 
@@ -55,7 +55,9 @@ Embedded-OTA-Update-Lab/
 ├── LICENSE
 ├── THIRD_PARTY_NOTICES.md
 ├── assets/images/  # Repository-authored architecture and flow SVG
-└── docs/           # Firmware-update architecture documentation
+├── docs/           # Firmware-update architecture documentation
+├── host_tools/     # Host-only byte-range model
+└── tests/          # Host-only model tests
 ```
 
 ## 📚 Documentation
@@ -74,11 +76,13 @@ Embedded-OTA-Update-Lab/
 
 | Verification Layer | Status | Boundary |
 | --- | --- | --- |
-| Host Test | NOT PROVIDED | No public parser, state machine, or CRC test implementation |
+| Host Test | 7 tests | Reference layout, capacity, contiguous ranges, full/tail block boundaries and invalid sizes only |
 | Build Verification | NOT PROVIDED | No current Keil project or firmware source is distributed |
 | Hardware Validation | NOT PROVIDED | No reviewable Flash, UART, network, or boot result |
 | Runtime Evidence | NOT PROVIDED | No transfer log, Flash trace, MQTT session, or boot record |
 
+在 Python 3.10+ 环境运行 `python -m unittest discover -s tests -v`。示例 `python -m host_tools.flash_plan 257` 打印从 Staging 到 Active 的计划字节范围；它不验证 Flash 擦写对齐、CRC、掉电恢复或映像可信性，也不连接设备。
+
 ## License Boundary
 
-根目录 MIT License 仅覆盖当前默认分支中仓库维护者编写的文档、配置与自绘 SVG。课程源码、GD32/CMSIS、startup、Keil 工程和第三方 transport 实现未包含在当前默认分支；旧提交中的历史文件仍需单独评估。详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+根目录 MIT License 仅覆盖当前默认分支中仓库维护者编写的文档、配置、自绘 SVG 与 Host 范围规划器及测试。课程源码、GD32/CMSIS、startup、Keil 工程和第三方 transport 实现未包含在当前默认分支；旧提交中的历史文件仍需单独评估。详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

@@ -36,3 +36,7 @@ Release/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Python host tests
+__pycache__/
+*.pyc
