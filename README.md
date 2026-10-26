@@ -15,14 +15,14 @@
 | Local Path | UART / YMODEM IAP model |
 | Network Path | MQTT block transport model |
 | Integrity Boundary | CRC error detection；no authentication, encryption or rollback claim |
-| Public Implementation | Host range planner, portable C block/image validators and configurable Flash port/simulator; no target firmware |
-| Verification | Python range tests and C Host tests；target build, Flash-write and boot evidence not provided |
+| Public Implementation | Host range planner, portable C validators, Flash simulator, and end-to-end OTA Host update model; no target firmware |
+| Verification | Python range tests and C Host demo/tests；target build, device Flash-write and boot evidence not provided |
 
 ## 📌 Overview
 
 仓库以原创文档和 SVG 描述 Bootloader / Application 边界、Flash 分区、向量跳转、UART/YMODEM IAP、MQTT 分块传输、更新元数据和 CRC 错误检测。
 
-当前默认分支不分发课程 Bootloader、Flash/YMODEM/ESP8266/MQTT 应用代码、GD32/CMSIS 厂商组件、startup 或 Keil 工程。[Host 范围规划器](host_tools/flash_plan.py) 按本文参考分区计算整块与尾块地址；独立实现的 [C 分块校验核心](docs/portable-block-validator.md) 检查顺序、长度和块 CRC；[映像元数据核心](docs/image-manifest.md)检查格式、长度、软件版本下限和整包 CRC32。它们都不执行 Flash 操作。Staging Backup 不是可启动 Slot B；文档不声明 A/B OTA、Automatic Rollback、Secure OTA、签名验证或生产级更新能力。
+当前默认分支不分发课程 Bootloader、Flash/YMODEM/ESP8266/MQTT 应用代码、GD32/CMSIS 厂商组件、startup 或 Keil 工程。[Host 范围规划器](host_tools/flash_plan.py) 计算参考字节范围；[C 分块校验核心](docs/portable-block-validator.md)检查顺序、长度和块 CRC；[映像元数据核心](docs/image-manifest.md)检查格式、长度、软件版本下限和整包 CRC32。[Host 更新流程](docs/host-update-flow.md)将它们与模拟 Flash 串成可运行的升级闭环，不访问真实设备。Staging Backup 不是可启动 Slot B；不声明 A/B OTA、Automatic Rollback、Secure OTA、签名验证或生产级更新能力。
 
 ## 🏗️ Architecture
 
@@ -49,6 +49,7 @@ UART/YMODEM 与 MQTT 是独立 transport model。CRC 只表达传输或存储错
 | Portable receive validation | [Block Validator](docs/portable-block-validator.md) |
 | Whole-image error detection | [Image Manifest](docs/image-manifest.md) |
 | Storage boundary and fault injection | [Flash Port](docs/flash-port.md) |
+| Integrated Host update and recovery | [Host Update Flow](docs/host-update-flow.md) |
 
 ## 📂 Project Structure
 
@@ -59,8 +60,9 @@ Embedded-OTA-Update-Lab/
 ├── THIRD_PARTY_NOTICES.md
 ├── assets/images/  # Repository-authored architecture and flow SVG
 ├── docs/           # Firmware-update architecture documentation
-├── host_tools/     # Host-only byte-range model
-├── include/, src/  # Portable C block validator; no hardware adapter
+├── host_tools/     # Host range model and simulated Flash
+├── tools/          # Executable Host OTA demo
+├── include/, src/  # Portable C validation/update core; no hardware adapter
 └── tests/          # Python and C Host tests
 ```
 
@@ -78,17 +80,18 @@ Embedded-OTA-Update-Lab/
 - [Portable Block Validator](docs/portable-block-validator.md)
 - [Image Manifest and CRC32](docs/image-manifest.md)
 - [Flash Port and Host Simulator](docs/flash-port.md)
+- [Host OTA Update Flow](docs/host-update-flow.md)
 
 ## 🧪 Verification
 
 | Verification Layer | Status | Boundary |
 | --- | --- | --- |
-| Host Test | 7 Python tests plus C core tests | Range planning, receive and image checks, Flash geometry, readback and injected storage failures |
+| Host Test | 7 Python tests plus C core/integration tests and executable demo | Range planning, receive, Staging, copy, CRC readback, Journal recovery, injected storage failures |
 | Target Build Verification | NOT PROVIDED | No Keil project or target firmware source is distributed |
 | Hardware Validation | NOT PROVIDED | No reviewable Flash, UART, network, or boot result |
-| Runtime Evidence | NOT PROVIDED | No transfer log, Flash trace, MQTT session, or boot record |
+| Device Runtime Evidence | NOT PROVIDED | No device transfer log, Flash trace, MQTT session, or boot record; Host demo is reproducible above |
 
-在 Python 3.10+ 环境运行 `python -m unittest discover -s tests -v`。示例 `python -m host_tools.flash_plan 257` 打印从 Staging 到 Active 的计划字节范围。C 模块的 GCC/Clang 构建命令与最小调用示例见 [Portable Block Validator](docs/portable-block-validator.md)。Python 规划器不校验 CRC；C 校验器不操作 Flash 或连接设备。Host 测试不能证明设备端擦写、YMODEM/MQTT 兼容、整包认证、掉电恢复或升级成功。
+在 Python 3.10+ 环境运行 `python -m unittest discover -s tests -v`。示例 `python -m host_tools.flash_plan 257` 打印参考字节范围。可复现的 C Demo 编译与三条运行路径见 [Host Update Flow](docs/host-update-flow.md)。Host 更新核心只操作注入的 Flash 接口；本仓库提供的是内存模拟器，没有目标 Flash 驱动。Host 测试不能证明设备端擦写、YMODEM/MQTT 兼容、整包认证、真实掉电恢复或实机升级成功。
 
 ## License Boundary
 

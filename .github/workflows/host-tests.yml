@@ -35,6 +35,18 @@ jobs:
             -I include -I host_tools src/ota_flash.c host_tools/ota_flash_sim.c \
             tests/test_ota_flash.c -o ota_flash_test
           ./ota_flash_test
+          ${{ matrix.compiler }} -std=c11 -Wall -Wextra -Werror -pedantic \
+            -I include -I host_tools src/ota_block_validator.c src/ota_image.c \
+            src/ota_flash.c src/ota_update.c host_tools/ota_flash_sim.c \
+            tests/test_ota_update.c -o ota_update_test
+          ./ota_update_test
+          ${{ matrix.compiler }} -std=c11 -Wall -Wextra -Werror -pedantic \
+            -I include -I host_tools src/ota_block_validator.c src/ota_image.c \
+            src/ota_flash.c src/ota_update.c host_tools/ota_flash_sim.c \
+            tools/ota_host_demo.c -o ota_host_demo
+          ./ota_host_demo normal
+          ./ota_host_demo corrupt
+          ./ota_host_demo recovery
 
   c-block-sanitizers:
     name: C validator (${{ matrix.sanitizer }})
@@ -64,3 +76,19 @@ jobs:
             -I include -I host_tools src/ota_flash.c host_tools/ota_flash_sim.c \
             tests/test_ota_flash.c -o ota_flash_test
           ./ota_flash_test
+          gcc -std=c11 -Wall -Wextra -Werror -pedantic -g -O1 \
+            -fno-omit-frame-pointer -fno-sanitize-recover=all \
+            -fsanitize=${{ matrix.sanitizer }} \
+            -I include -I host_tools src/ota_block_validator.c src/ota_image.c \
+            src/ota_flash.c src/ota_update.c host_tools/ota_flash_sim.c \
+            tests/test_ota_update.c -o ota_update_test
+          ./ota_update_test
+          gcc -std=c11 -Wall -Wextra -Werror -pedantic -g -O1 \
+            -fno-omit-frame-pointer -fno-sanitize-recover=all \
+            -fsanitize=${{ matrix.sanitizer }} \
+            -I include -I host_tools src/ota_block_validator.c src/ota_image.c \
+            src/ota_flash.c src/ota_update.c host_tools/ota_flash_sim.c \
+            tools/ota_host_demo.c -o ota_host_demo
+          ./ota_host_demo normal
+          ./ota_host_demo corrupt
+          ./ota_host_demo recovery
