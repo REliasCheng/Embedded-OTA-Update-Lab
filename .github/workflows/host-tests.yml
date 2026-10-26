@@ -31,6 +31,10 @@ jobs:
           ${{ matrix.compiler }} -std=c11 -Wall -Wextra -Werror -pedantic \
             -I include src/ota_image.c tests/test_ota_image.c -o ota_image_test
           ./ota_image_test
+          ${{ matrix.compiler }} -std=c11 -Wall -Wextra -Werror -pedantic \
+            -I include -I host_tools src/ota_flash.c host_tools/ota_flash_sim.c \
+            tests/test_ota_flash.c -o ota_flash_test
+          ./ota_flash_test
 
   c-block-sanitizers:
     name: C validator (${{ matrix.sanitizer }})
@@ -54,3 +58,9 @@ jobs:
             -fsanitize=${{ matrix.sanitizer }} \
             -I include src/ota_image.c tests/test_ota_image.c -o ota_image_test
           ./ota_image_test
+          gcc -std=c11 -Wall -Wextra -Werror -pedantic -g -O1 \
+            -fno-omit-frame-pointer -fno-sanitize-recover=all \
+            -fsanitize=${{ matrix.sanitizer }} \
+            -I include -I host_tools src/ota_flash.c host_tools/ota_flash_sim.c \
+            tests/test_ota_flash.c -o ota_flash_test
+          ./ota_flash_test
