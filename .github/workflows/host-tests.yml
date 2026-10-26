@@ -28,6 +28,9 @@ jobs:
             -I include src/ota_block_validator.c tests/test_ota_block_validator.c \
             -o ota_block_validator_test
           ./ota_block_validator_test
+          ${{ matrix.compiler }} -std=c11 -Wall -Wextra -Werror -pedantic \
+            -I include src/ota_image.c tests/test_ota_image.c -o ota_image_test
+          ./ota_image_test
 
   c-block-sanitizers:
     name: C validator (${{ matrix.sanitizer }})
@@ -46,3 +49,8 @@ jobs:
             -I include src/ota_block_validator.c tests/test_ota_block_validator.c \
             -o ota_block_validator_test
           ./ota_block_validator_test
+          gcc -std=c11 -Wall -Wextra -Werror -pedantic -g -O1 \
+            -fno-omit-frame-pointer -fno-sanitize-recover=all \
+            -fsanitize=${{ matrix.sanitizer }} \
+            -I include src/ota_image.c tests/test_ota_image.c -o ota_image_test
+          ./ota_image_test

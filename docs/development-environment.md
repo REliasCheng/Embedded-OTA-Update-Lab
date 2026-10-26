@@ -10,7 +10,7 @@
 
 ## Project Boundary
 
-当前默认分支包含原创架构文档、自绘 SVG、Python Host 范围规划器及独立 C11 分块校验器，不包含 Keil `.uvprojx`、CMSIS、vendor library、startup、Bootloader/Application 目标工程、构建产物或固件二进制。
+当前默认分支包含原创架构文档、自绘 SVG、Python Host 范围规划器、独立 C11 分块校验器及映像元数据/CRC 核心，不包含 Keil `.uvprojx`、CMSIS、vendor library、startup、Bootloader/Application 目标工程、构建产物或固件二进制。
 
 ## Build status
 
