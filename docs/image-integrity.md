@@ -8,6 +8,8 @@
 | CRC-16/IBM | OTA firmware block | `0xA001` | MQTT block payload error detection |
 | CRC8 | Parameter record | implementation-defined in project | Flash parameter record consistency |
 
+当前公开实现的 [C 分块校验器](portable-block-validator.md) 使用反射多项式 `0xA001`，初值与最终 XOR 由调用者显式给出；已用 CRC-16/ARC 与 CRC-16/MODBUS 标准检查值进行 Host 测试。它只校验传入的单块字节，不解析 MQTT、YMODEM 或设备 CRC 字段，因此不能推断与资料中的网络协议直接兼容。YMODEM 的 CRC-16/XMODEM 不作为此模块的默认算法。
+
 ## Cryptographic Boundary
 
 - Whole-image hash；

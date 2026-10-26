@@ -10,16 +10,15 @@
 
 ## Project Boundary
 
-当前默认分支只包含原创架构文档与自绘 SVG，不包含 Keil `.uvprojx`、CMSIS、vendor library、startup、Bootloader/Application 源码、构建产物或固件二进制。
+当前默认分支包含原创架构文档、自绘 SVG、Python Host 范围规划器及独立 C11 分块校验器，不包含 Keil `.uvprojx`、CMSIS、vendor library、startup、Bootloader/Application 目标工程、构建产物或固件二进制。
 
 ## Build status
 
-当前分支没有可构建工程，因此：
+当前分支有可在 Host 使用 GCC/Clang 构建的独立 C 模块，但没有目标固件工程，因此：
 
 ```text
-BUILD_PASS=0
-BUILD_FAIL=0
-BUILD_NOT_AVAILABLE=YES
+HOST_C_BUILD=AVAILABLE
+TARGET_BUILD_NOT_AVAILABLE=YES
 ```
 
 历史 Keil log、工程文件或源码存在性不能替代当前编译或硬件验证。

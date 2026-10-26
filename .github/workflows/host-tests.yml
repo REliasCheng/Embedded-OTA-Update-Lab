@@ -12,3 +12,37 @@ jobs:
       - uses: actions/checkout@v5.1.0
       - name: Test documented Flash ranges
         run: python3 -m unittest discover -s tests -v
+
+  c-block-validator:
+    name: C validator (${{ matrix.compiler }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v5.1.0
+      - name: Compile and run portable block validator
+        run: |
+          ${{ matrix.compiler }} -std=c11 -Wall -Wextra -Werror -pedantic \
+            -I include src/ota_block_validator.c tests/test_ota_block_validator.c \
+            -o ota_block_validator_test
+          ./ota_block_validator_test
+
+  c-block-sanitizers:
+    name: C validator (${{ matrix.sanitizer }})
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [address, undefined]
+    steps:
+      - uses: actions/checkout@v5.1.0
+      - name: Compile and run under sanitizer
+        run: |
+          gcc -std=c11 -Wall -Wextra -Werror -pedantic -g -O1 \
+            -fno-omit-frame-pointer -fno-sanitize-recover=all \
+            -fsanitize=${{ matrix.sanitizer }} \
+            -I include src/ota_block_validator.c tests/test_ota_block_validator.c \
+            -o ota_block_validator_test
+          ./ota_block_validator_test
