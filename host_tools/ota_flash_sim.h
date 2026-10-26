@@ -8,7 +8,9 @@ typedef struct {
     uint32_t storage_size;
     int fail_read;
     int fail_erase;
-    size_t fail_program_after; /* SIZE_MAX disables fault injection. */
+    uint32_t fail_erase_at; /* UINT32_MAX disables address-specific failure. */
+    size_t fail_program_after; /* Cumulative bytes; SIZE_MAX disables fault. */
+    size_t programmed_bytes;
 } OtaFlashSim;
 
 /* The caller supplies storage; initialization models erased Flash (0xFF). */

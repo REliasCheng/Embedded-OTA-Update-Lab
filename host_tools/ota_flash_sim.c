@@ -22,7 +22,8 @@ static int sim_read(void *context, uint32_t offset, uint8_t *out,
 static int sim_erase(void *context, uint32_t offset, uint32_t length)
 {
     OtaFlashSim *sim = context;
-    if (sim->fail_erase || !sim_range(sim, offset, length)) {
+    if (sim->fail_erase || offset == sim->fail_erase_at ||
+        !sim_range(sim, offset, length)) {
         return 0;
     }
     memset(sim->storage + offset, 0xFF, length);
@@ -39,11 +40,12 @@ static int sim_program(void *context, uint32_t offset, const uint8_t *data,
     }
     for (i = 0U; i < length; ++i) {
         uint8_t old_value = sim->storage[offset + i];
-        if ((size_t)i == sim->fail_program_after ||
+        if (sim->programmed_bytes == sim->fail_program_after ||
             (uint8_t)(old_value & data[i]) != data[i]) {
             return 0;
         }
         sim->storage[offset + i] = data[i];
+        ++sim->programmed_bytes;
     }
     return 1;
 }
@@ -65,7 +67,8 @@ OtaFlashResult ota_flash_sim_init(OtaFlashSim *sim, uint8_t *storage,
         geometry.total_size % geometry.erase_unit != 0U) {
         return OTA_FLASH_INVALID_GEOMETRY;
     }
-    *sim = (OtaFlashSim){storage, geometry.total_size, 0, 0, SIZE_MAX};
+    *sim = (OtaFlashSim){storage, geometry.total_size, 0, 0, UINT32_MAX,
+                         SIZE_MAX, 0U};
     memset(storage, 0xFF, geometry.total_size);
     *port_out = candidate;
     return OTA_FLASH_OK;
