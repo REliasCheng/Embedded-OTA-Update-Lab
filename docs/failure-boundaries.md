@@ -1,37 +1,29 @@
 # 架构边界 | Failure Boundaries
 
-本页记录架构模型的 update-state 与恢复边界，区分设计元素和尚无实现证据支持的可靠性能力。
+本页区分已运行的 Host OTA 软件模型与仍未实现的 GD32 目标 Bootloader。模拟 Flash 的故障注入结果不能直接推断真实设备的掉电行为。
 
 ## Staging 与启动
 
-模型先把固件块写入 Staging Backup，再复制到固定 Active App。Bootloader 只从 `0x08008000` 启动 Application；它没有两个独立可启动 Slot，也没有 active/pending/confirmed image state。
+当前 [Host 更新流程](host-update-flow.md)将经过分块校验的数据写入模拟 Staging，读回并校验整包 CRC32，再复制到模拟 Active 并再次读回校验。写入、擦除、复制、读取和 Journal 写入均有可重复的故障注入测试；损坏映像会被拒绝。
 
-因此当前结构不能描述为：
+`ota_update_boot_eligible()` 只在 Host 状态为 `APPLIED` 且 Active 内容仍与 manifest CRC32 一致时返回可启动资格。它没有验证 Cortex-M 向量、MSP、Reset Handler 或实际启动。参考布局中的 Bootloader 从固定 Application 地址交接执行权；Staging 不是第二套可启动 Slot。因此不能将当前实现描述为 A/B 更新、双 Bank 启动或自动回滚。
 
-- A/B firmware update；
-- Dual-bank boot；
-- Automatic rollback。
+## Journal 与恢复
 
-## 恢复状态
+Host 核心已有两个交替擦除单元的 Journal，记录 `RECEIVING`、`RECEIVED`、`READY`、`APPLYING`、`APPLIED`，并校验记录的 CRC32 与映像元数据。`ota_update_resume()` 在模拟复位后读取有效记录及模拟 Flash 内容，恢复保守状态：
 
-若 block offset、当前 block 和重试计数只保存在 RAM，则无法支持跨复位的 persistent resume。当前仓库没有 download journal、copy journal 或 confirmed-boot 实现证据。
+- `READY` 或 `APPLYING` 只有在 Staging 整包 CRC32 仍正确时，才能进入需要显式调用 `ota_update_retry_apply()` 的恢复状态；不会自动继续复制。
+- `APPLIED` 还须通过 Active 整包 CRC32 读回校验，Host 模型才接受该状态。
+- 没有有效记录或记录损坏时，不会被当作成功安装。
 
-## Future Verification
+Journal **不保存已接收的块数或下载进度**。`RECEIVING`、`RECEIVED` 阶段发生中断后，不能从原偏移续传；必须通过 `ota_update_begin()` 重新开始接收。部分写入或复制失败也不会被报告为原子成功。
 
-- 擦除与写入范围必须严格落在目标分区内。
-- Host 范围规划器已测试 256-byte 整倍数、尾块和完整 Staging / Active 容量；目标端 block/copy loop 仍需实现和验证。
-- C 分块校验器在 Host 测试中拒绝越界、重复、乱序与 CRC 错误，失败时不推进内存中的接收进度；它不保存块数据、不实现持久化恢复，也不替代目标端擦写检查。
-- 映像元数据核心在 Host 测试中拒绝未知格式、非法长度和整包 CRC32 错误；当前仍没有从真实 Staging 读取后校验及原子安装的实现。
-- 实际下载路径仍须在擦写前检查完整 Staging 上限；Host 规划器不能证明设备端执行了此检查。
-- 版本、更新标志和 copy 失败路径需要故障注入验证。
-- Link region 必须限制在 Active App 分区大小内。
+## 仍需目标与设备验证
 
-## 当前没有证据支持的结论
+- 参考 Flash 分区是否符合 GD32F407VE 的实际擦除扇区、链接边界和启动向量要求。
+- 真实 Flash 在断电、部分擦除或部分写入时的行为，以及 Journal 两槽记录在该设备上的持久化保证。
+- 目标端 Bootloader、传输协议、应用跳转、失败后的外部恢复路径和实机运行结果。
 
-- Hardware update success；
-- Corrupted-image rejection test；
-- Power-loss recovery test；
-- Rollback after failed boot；
-- Production-ready OTA。
+单 Active 加 Staging 不提供原子升级或自动回滚。Host CRC32 用于检测意外损坏，不提供固件来源认证。当前没有真实设备掉电安全、板端成功启动或生产级 OTA 的证据。
 
 [上一篇：Image Integrity](image-integrity.md) · [返回 README](../README.md) · [下一篇：Development Environment](development-environment.md)
